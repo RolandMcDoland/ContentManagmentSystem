@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -55,8 +55,7 @@ ROOT_URLCONF = 'ContentManagmentSystem.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,9 +77,9 @@ WSGI_APPLICATION = 'ContentManagmentSystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': '',  # insert database name
-        'USER': '',  # insert database user name
-        'PASSWORD': '',  # insert database user password
+        'NAME': 'cms_db',  # insert database name
+        'USER': 'root',  # insert database user name
+        'PASSWORD': 'zaq1@WSX',  # insert database user password
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
