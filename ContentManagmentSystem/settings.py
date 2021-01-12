@@ -77,9 +77,9 @@ WSGI_APPLICATION = 'ContentManagmentSystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cms_db',  # insert database name
-        'USER': 'root',  # insert database user name
-        'PASSWORD': 'zaq1@WSX',  # insert database user password
+        'NAME': '',  # insert database name
+        'USER': '',  # insert database user name
+        'PASSWORD': '',  # insert database user password
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }

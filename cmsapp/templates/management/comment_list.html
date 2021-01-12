@@ -1,0 +1,32 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Comments</h1>
+
+    <table class="table table-hover mt-5">
+        <thead>
+            <tr>
+                <th>Comment</th>
+                <th>Author</th>
+                <th>Article</th>
+                <th>Edited</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if comments %}
+                {% for comment in comments %}
+                    <tr>
+                        <td>{{ comment.text }}</td>
+                        <td>{{ comment.user_id }}</td>
+                        <td>{{ comment.article_id.name }}</td>
+                        <td>{{ comment.published_date }}</td>
+                        <td><button class="btn btn-primary btn-sm">Edit</button></td>
+                        <td><button class="btn btn-danger btn-sm">Delete</button></td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+{% endblock %}
