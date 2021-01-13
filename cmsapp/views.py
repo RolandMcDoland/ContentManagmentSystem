@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 
@@ -33,6 +33,14 @@ def user_list(request):
 
         return render(request, 'management/user_list.html', {'users': users})
     return render(request, 'bad_permission.html')
+
+def article_new(request):
+    return render(request, 'management/article_new.html')
+
+def article_save(request):
+    article = Article(name = request.POST.get("title"), user_id = request.user, published_date = request.POST.get("publishDate"), path = request.POST.get("path"))
+    article.save()
+    return redirect('cmsapp:article_list')
 
 
 def custom_login(request):

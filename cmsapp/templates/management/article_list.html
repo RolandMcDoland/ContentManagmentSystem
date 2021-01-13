@@ -3,7 +3,7 @@
 {% block content %}
     <h1>Articles</h1>
 
-    <button class="btn btn-outline-success float-right my-4">Add new article</button>
+    <a href="{% url 'cmsapp:article_new' %}" class="btn btn-outline-success float-right my-4">Add new article</a>
 
     <table class="table table-hover">
         <thead>

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
 from pathlib import Path
+import authorization
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -77,9 +78,9 @@ WSGI_APPLICATION = 'ContentManagmentSystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': '',  # insert database name
-        'USER': '',  # insert database user name
-        'PASSWORD': '',  # insert database user password
+        'NAME': 'cms_db',  # insert database name
+        'USER': authorization.username,  # insert database user name
+        'PASSWORD': authorization.password,  # insert database user password
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
