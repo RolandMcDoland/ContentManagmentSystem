@@ -10,6 +10,8 @@ urlpatterns = [
     path('manage/users', views.user_list, name='user_list'),
     path('manage/articles/new', views.article_new, name='article_new'),
     path('manage/articles/new/save', views.article_save, name='article_save'),
+    path('manage/articles/edit/<str:name>', views.article_edit),
+    path('manage/articles/edit', views.article_edit_save, name='article_edit'),
     path('account/login', views.custom_login, name='login'),
     path('account/logout', views.custom_logout, name='logout'),
     path('account/authentication', views.custom_authentication, name='authentication'),

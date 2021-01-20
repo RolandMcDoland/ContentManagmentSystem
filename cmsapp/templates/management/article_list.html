@@ -24,7 +24,7 @@
                         <td>{{ article.path }}</td>
                         <td>tag</td>
                         <td>{{ article.edited_date }}</td>
-                        <td><button class="btn btn-primary btn-sm">Edit</button></td>
+                        <td><a href="/manage/articles/edit/{{ article.name }}" class="btn btn-primary btn-sm">Edit</a></td>
                         <td><button class="btn btn-danger btn-sm">Delete</button></td>
                     </tr>
                 {% endfor %}

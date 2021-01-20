@@ -16,6 +16,7 @@ class Article(models.Model):
     edited_date = models.DateTimeField(auto_now=True)
     visible = models.BooleanField(default=False)
     path = models.CharField(max_length=200)
+    content = models.CharField(max_length=500)
 
 
 class Tag(models.Model):

@@ -38,7 +38,22 @@ def article_new(request):
     return render(request, 'management/article_new.html')
 
 def article_save(request):
-    article = Article(name = request.POST.get("title"), user_id = request.user, published_date = request.POST.get("publishDate"), path = request.POST.get("path"))
+    article = Article(name = request.POST.get("title"), user_id = request.user, published_date = request.POST.get("publishDate"), path = request.POST.get("path"), content = request.POST.get("content"))
+    article.save()
+    return redirect('cmsapp:article_list')
+
+def article_edit(request, name):
+    if request.user.is_superuser:
+        article = Article.objects.filter(name=name).first()
+        return render(request, 'management/article_edit.html', {'article': article})
+    return render(request, 'bad_permission.html')
+
+def article_edit_save(request):
+    article = Article.objects.filter(name="Title1").first()
+    article.name = request.POST.get("title")
+    article.published_date = request.POST.get("publishDate")
+    article.path = request.POST.get("path")
+    article.content = request.POST.get("content")
     article.save()
     return redirect('cmsapp:article_list')
 
