@@ -1,0 +1,25 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Edit <span class="font-weight-bold">{{ edit_user.username }}</span></h1>
+
+    <form method="post" class="my-4" action="{% url 'cmsapp:user_save' edit_user.id %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="selected_group">Select group</label><br/>
+            <select class="custom-select col-md-3" id="selected_group" name="selected_group" required>
+                {% if edit_user.group == '' %}
+                    <option disabled selected value style="display:none"></option>
+                {% endif %}
+                {% for group in groups %}
+                    {% if edit_user.group.name == group.name %}
+                        <option value="{{ group.id }}" selected>{{ group.name }}</option>
+                    {% else %}
+                        <option value="{{ group.id }}">{{ group.name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <input class="btn btn-primary" type="submit" value="Save" />
+    </form>
+{% endblock %}

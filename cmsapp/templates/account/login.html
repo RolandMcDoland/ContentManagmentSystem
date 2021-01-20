@@ -2,9 +2,9 @@
 
 {% block content %}
     <h2>Login in</h2>
-    <form method="post" action="{% url 'cmsapp:authentication' %}">
+    <form class="my-4" method="post" action="{% url 'cmsapp:authentication' %}">
         {% csrf_token %}
-        <table>
+        <table class="my-4">
             <tr>
                 <td>Username</td>
                 <td><input type="text" class="form-control" id="username" name="username"></td>
@@ -14,8 +14,8 @@
                 <td><input type="password" class="form-control" id="password" name="password"></td>
             </tr>
         </table>
-        <input type="submit" value="login" />
-{#        <input type="hidden" name="next" value="{{ next }}" />#}
+        <input class="btn btn-secondary" type="submit" value="Login" />
+        <a class="btn btn-secondary" href="{% url 'cmsapp:register' %}">Register</a>
     </form>
 
     {% if error %}
