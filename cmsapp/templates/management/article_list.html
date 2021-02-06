@@ -9,7 +9,7 @@
         <thead>
             <tr>
                 <th>Title</th>
-                <th>Path</th>
+{#                <th>Path</th>#}
                 <th>Tags</th>
                 <th>Edited</th>
                 <th></th>
@@ -21,11 +21,11 @@
                 {% for article in articles %}
                     <tr>
                         <td>{{ article.name }}</td>
-                        <td>{{ article.path }}</td>
+{#                        <td>{{ article.path }}</td>#}
                         <td>tag</td>
                         <td>{{ article.edited_date }}</td>
                         <td><button class="btn btn-primary btn-sm">Edit</button></td>
-                        <td><button class="btn btn-danger btn-sm">Delete</button></td>
+                        <td><a class="btn btn-danger btn-sm" href="{% url 'cmsapp:article_delete' article.id %}">Delete</a></td>
                     </tr>
                 {% endfor %}
             {% endif %}

@@ -1,14 +1,29 @@
+import datetime
+import pathlib
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group
 
+from django.conf import settings
 from .models import Article, Comment, User
 
 
 def index(request):
-    # return HttpResponse("Hello world! It's working!")
-    return render(request, 'index.html')
+    articles = Article.objects.order_by('edited_date')
+    for a in articles:
+        with open(a.path, 'r') as f:
+            a.short_content = f.read()[:100]
+    return render(request, 'index.html', {'articles': articles})
+
+
+def article_read(request, article_id):
+    article = get_object_or_404(Article, pk=article_id)
+    with open(article.path, 'r') as f:
+        article.content = f.read()
+    comments = Comment.objects.filter(article_id_id__exact=article_id).order_by('published_date').reverse()
+    return render(request, 'article.html', {'article': article, 'comments': comments})
 
 
 def article_list(request):
@@ -23,6 +38,12 @@ def comment_list(request):
         comments = Comment.objects.order_by('article_id')
         return render(request, 'management/comment_list.html', {'comments': comments})
     return render(request, 'bad_permission.html')
+
+
+def comment_new(request, article_id):
+    comment = Comment(article_id=get_object_or_404(Article, pk=article_id), user_id=request.user, text=request.POST.get('commentText'))
+    comment.save()
+    return redirect('cmsapp:article_read', article_id)
 
 
 def user_list(request):
@@ -58,12 +79,26 @@ def user_delete(request, user_id):
     u.delete()
     return redirect('cmsapp:user_list')
 
+
 def article_new(request):
     return render(request, 'management/article_new.html')
 
+
 def article_save(request):
-    article = Article(name = request.POST.get("title"), user_id = request.user, published_date = request.POST.get("publishDate"), path = request.POST.get("path"))
+    path = settings.MEDIA_ROOT + 'articles/' + request.POST.get("title") + '_' + datetime.datetime.now().strftime('%Y-%m-%d') + '.txt'
+
+    pathlib.Path(settings.MEDIA_ROOT + 'articles').mkdir(parents=True, exist_ok=True)
+    with open(path, 'a+') as f:
+        f.write(request.POST.get("content"))
+
+    article = Article(name=request.POST.get("title"), user_id=request.user, published_date=request.POST.get("publishDate"), path=path)
     article.save()
+    return redirect('cmsapp:article_list')
+
+
+def article_delete(request, article_id):
+    a = get_object_or_404(Article, pk=article_id)
+    a.delete()
     return redirect('cmsapp:article_list')
 
 

@@ -1,0 +1,34 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>{{ article.name }}</h1>
+    <h5>Author: {{ article.user_id.username }}</h5>
+
+    <p>{{ article.content }}</p>
+
+    <div class="my-4"></div>
+    {% if user.is_authenticated %}
+        <h4>Write a comment</h4>
+        <form action="{% url 'cmsapp:comment_new' article.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <textarea rows="5" class="form-control" id="inputContent" placeholder="Enter comment" name="commentText"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    {% else %}
+        <h4>You need to be logged in to comment.</h4>
+    {% endif %}
+
+    <h4 class="mt-4">Comments</h4>
+    {% if comments %}
+        {% for comment in comments %}
+            <div class="my-4">
+                <div><span class="font-weight-boldCont  ">{{ comment.user_id.username }}</span> - {{ comment.published_date }}</div>
+                <div>{{ comment.text }}</div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div>No one wrote yet. Be first!</div>
+    {% endif %}
+{% endblock %}
