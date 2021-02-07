@@ -24,7 +24,8 @@
 {#                        <td>{{ article.path }}</td>#}
                         <td>tag</td>
                         <td>{{ article.edited_date }}</td>
-                        <td><button class="btn btn-primary btn-sm">Edit</button></td>
+{#                        <td><a href="/manage/articles/edit/{{ article.name }}" class="btn btn-primary btn-sm">Edit</a></td>#}
+                        <td><a class="btn btn-primary btn-sm" href="{% url 'cmsapp:article_edit' article.name %}" >Edit</a></td>
                         <td><a class="btn btn-danger btn-sm" href="{% url 'cmsapp:article_delete' article.id %}">Delete</a></td>
                     </tr>
                 {% endfor %}
