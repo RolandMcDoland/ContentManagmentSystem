@@ -89,26 +89,35 @@ def article_save(request):
 
     pathlib.Path(settings.MEDIA_ROOT + 'articles').mkdir(parents=True, exist_ok=True)
     with open(path, 'a+') as f:
-        f.write(request.POST.get("content"))
+        f.write(request.POST.get("content").replace('\n', ''))
 
-    article = Article(name=request.POST.get("title"), user_id=request.user, published_date=request.POST.get("publishDate"), path=path, content = request.POST.get("content"))
+    article = Article(name=request.POST.get("title"), user_id=request.user, published_date=request.POST.get("publishDate"), path=path, content=request.POST.get("content"))
     article.save()
     return redirect('cmsapp:article_list')
 
 
-def article_edit(request, name):
+def article_edit(request, article_id):
     if request.user.is_superuser:
-        article = Article.objects.filter(name=name).first()
+        article = Article.objects.filter(pk=article_id).first()
+
+        with open(article.path, 'r') as f:
+            article.content = f.read()
+
         return render(request, 'management/article_edit.html', {'article': article})
     return render(request, 'bad_permission.html')
 
 
-def article_edit_save(request):
-    article = Article.objects.filter(name="Title1").first()
+def article_edit_save(request, article_id):
+    article = Article.objects.filter(pk=article_id).first()
     article.name = request.POST.get("title")
     article.published_date = request.POST.get("publishDate")
-    article.path = request.POST.get("path")
-    article.content = request.POST.get("content")
+    # article.path = request.POST.get("path")
+    # article.content = request.POST.get("content")
+
+    path = article.path
+    with open(path, 'w') as f:
+        f.write(request.POST.get("content").replace('\n', ''))
+
     article.save()
     return redirect('cmsapp:article_list')
 
