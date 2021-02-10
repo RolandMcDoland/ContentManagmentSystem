@@ -22,7 +22,6 @@ class Article(models.Model):
 class Tag(models.Model):
     article_id = models.ManyToManyField(Article, db_table='articles_to_tags')
     name = models.CharField(max_length=100)
-    description = models.CharField(max_length=200)
 
 
 class Comment(models.Model):

@@ -1,0 +1,12 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>New Section</h1>
+    <form action="{% url 'cmsapp:section_save' %}" method="post">{% csrf_token %}
+        <div class="form-group">
+            <label for="inputName">Name</label>
+            <input type="text" class="form-control" id="inputName" aria-describedby="titleName" placeholder="Enter name" name="name">
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+{% endblock %}

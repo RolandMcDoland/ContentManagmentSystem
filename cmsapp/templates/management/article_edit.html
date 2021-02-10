@@ -9,7 +9,21 @@
         </div>
         <div class="form-group">
             <label for="inputTags">Tags</label>
-            <input type="text" class="form-control" id="inputTags" aria-describedby="tagsHelp" placeholder="Enter tags" name="tags">
+            <input type="text" class="form-control" id="inputTags" aria-describedby="tagsHelp" value="{{ tags }}" name="tags">
+        </div>
+        <div class="form-group">
+            <label for="inputSection">Section</label>
+            <select class="form-control" id="inputSection" aria-describedby="sectionHelp" name="section">
+                {% if sections %}
+                    {% for section in sections %}
+                        {% if section.id == article.section_id.id %}
+                            <option value="{{ section.name }}" selected="selected">{{ section.name }}</option>
+                        {% else %}
+                            <option value="{{ section.name }}">{{ section.name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </select>
         </div>
         <div class="form-group">
             <label for="inputContent">Content</label>

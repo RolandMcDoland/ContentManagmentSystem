@@ -5,10 +5,17 @@ from . import views
 app_name = 'cmsapp'
 urlpatterns = [
     path('', views.index, name='index'),
+    path('articles/section/<int:section_id>', views.article_section, name='article_section'),
     path('articles/<int:article_id>', views.article_read, name='article_read'),
     path('comments/new/<int:article_id>', views.comment_new, name='comment_new'),
     path('manage/articles', views.article_list, name='article_list'),
     path('manage/comments', views.comment_list, name='comment_list'),
+    path('manage/sections', views.section_list, name='section_list'),
+    path('manage/sections/new', views.section_new, name='section_new'),
+    path('manage/sections/new/save', views.section_save, name='section_save'),
+    path('manage/sections/delete/<int:section_id>', views.section_delete, name='section_delete'),
+    path('manage/sections/edit/<int:section_id>', views.section_edit, name='section_edit'),
+    path('manage/sections/edit/save/<int:section_id>', views.section_edit_save, name='section_edit_save'),
     path('manage/users', views.user_list, name='user_list'),
     path('manage/users/edit/<int:user_id>', views.user_edit, name='user_edit'),
     path('manage/users/edit/save/<int:user_id>', views.user_save, name='user_save'),
