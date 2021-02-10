@@ -39,4 +39,10 @@
         </div>
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
+    {% load static %}
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+    <script>
+        CKEDITOR.replace('inputContent');
+    </script>
 {% endblock %}

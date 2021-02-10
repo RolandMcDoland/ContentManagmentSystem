@@ -7,7 +7,7 @@
     <h1>{{ article.name }}</h1>
     <h5>Author: {{ article.user_id.username }}</h5>
 
-    <p>{{ article.content }}</p>
+    <p>{{ article.content | safe}}</p>
 
     <div class="my-4"></div>
     {% if user.is_authenticated %}

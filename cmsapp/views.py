@@ -19,6 +19,7 @@ def index(request):
     sections = Section.objects.all()
     return render(request, 'index.html', {'articles': articles, 'sections': sections})
 
+
 def article_section(request, section_id):
     articles = Article.objects.filter(published_date__lte=datetime.datetime.now(), section_id__id=section_id).order_by('edited_date')
     for a in articles:
@@ -76,28 +77,34 @@ def comment_new(request, article_id):
     comment.save()
     return redirect('cmsapp:article_read', article_id)
 
+
 def section_list(request):
     if request.user.is_superuser:
         sections = Section.objects.order_by('name')
         return render(request, 'management/section_list.html', {'sections': sections})
     return render(request, 'bad_permission.html')
 
+
 def section_new(request):
     return render(request, 'management/section_new.html')
+
 
 def section_save(request):
     section = Section(name=request.POST.get('name'))
     section.save()
     return redirect('cmsapp:section_list')
 
+
 def section_delete(request, section_id):
     s = get_object_or_404(Section, pk=section_id)
     s.delete()
     return redirect('cmsapp:section_list')
 
+
 def section_edit(request, section_id):
     section = get_object_or_404(Section, pk=section_id)
     return render(request, 'management/section_edit.html', {'section': section})
+
 
 def section_edit_save(request, section_id):
     section = get_object_or_404(Section, pk=section_id)
@@ -155,7 +162,7 @@ def article_save(request):
 
     section = Section.objects.filter(name=request.POST.get('section')).first()
 
-    article = Article(name=request.POST.get("title"), user_id=request.user, published_date=request.POST.get("publishDate"), path=path, content=request.POST.get("content"), section_id=section)
+    article = Article(name=request.POST.get("title"), user_id=request.user, published_date=request.POST.get("publishDate"), path=path, section_id=section)
     article.save()
 
     for tag_name in request.POST.get("tags").split(';'):

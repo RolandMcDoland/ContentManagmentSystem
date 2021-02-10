@@ -1,13 +1,6 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-{#    <h2>Index</h2>#}
-{#    <p>Welcome page</p>#}
-{#    {% if user.is_authenticated  %}#}
-{#        You are currently logged in#}
-{#    {% else %}#}
-{#        You are currently logged out#}
-{#    {% endif %}#}
 <nav class="navbar navbar-expand justify-content-between navbar-light bg-light">
     <a class="navbar-brand" href="{% url 'cmsapp:index' %}">All</a>
     {% if sections %}
@@ -25,7 +18,7 @@
     {% for article in articles %}
         <div class="my-4">
             <h3>{{ article.name }}</h3>
-            <p>{{ article.short_content }}...</p>
+            <p>{{ article.short_content | safe }}...</p>
             <a href="{% url 'cmsapp:article_read' article.id %}">Read more...</a>
         </div>
     {% endfor %}
