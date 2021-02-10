@@ -78,6 +78,24 @@ def comment_new(request, article_id):
     return redirect('cmsapp:article_read', article_id)
 
 
+def comment_edit(request, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    return render(request, 'management/comment_edit.html', {'comment': comment})
+
+
+def comment_edit_save(request, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    comment.text = request.POST.get('commentText')
+    comment.save()
+    return redirect('cmsapp:comment_list')
+
+
+def comment_delete(request, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    comment.delete()
+    return redirect('cmsapp:comment_list')
+
+
 def section_list(request):
     if request.user.is_superuser:
         sections = Section.objects.order_by('name')

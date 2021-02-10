@@ -22,8 +22,8 @@
                         <td>{{ comment.user_id }}</td>
                         <td>{{ comment.article_id.name }}</td>
                         <td>{{ comment.published_date }}</td>
-                        <td><button class="btn btn-primary btn-sm">Edit</button></td>
-                        <td><button class="btn btn-danger btn-sm">Delete</button></td>
+                        <td><a class="btn btn-primary btn-sm" href="{% url 'cmsapp:comment_edit' comment.id %}">Edit</a></td>
+                        <td><a class="btn btn-danger btn-sm" href="{% url 'cmsapp:comment_delete' comment.id %}">Delete</a></td>
                     </tr>
                 {% endfor %}
             {% endif %}

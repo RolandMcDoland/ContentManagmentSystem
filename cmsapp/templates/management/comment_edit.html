@@ -1,0 +1,14 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h2>Edit comment made by <span class="font-weight-bold">{{ comment.user_id.username }}</span> in {{ comment.published_date }}</h2>
+
+    <form method="post" class="my-4" action="{% url 'cmsapp:comment_edit_save' comment.id %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="commentTextArea">Comment</label><br/>
+            <textarea rows="5" class="form-control" id="commentTextArea" placeholder="Enter comment" name="commentText">{{ comment.text }}</textarea>
+        </div>
+        <input class="btn btn-primary" type="submit" value="Save" />
+    </form>
+{% endblock %}
