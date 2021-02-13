@@ -1,5 +1,6 @@
 import datetime
 import pathlib
+from re import sub
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
@@ -14,7 +15,10 @@ def index(request):
     articles = Article.objects.filter(published_date__lte=datetime.datetime.now()).order_by('edited_date')
     for a in articles:
         with open(a.path, 'r') as f:
-            a.short_content = f.read()[:100]
+            sc = f.read()[:300]
+        sc = sub(r'</\S+>', '', sc)
+        sc = sub(r'<.+>', '', sc)
+        a.short_content = sc
 
     sections = Section.objects.all()
     return render(request, 'index.html', {'articles': articles, 'sections': sections})
@@ -24,7 +28,10 @@ def article_section(request, section_id):
     articles = Article.objects.filter(published_date__lte=datetime.datetime.now(), section_id__id=section_id).order_by('edited_date')
     for a in articles:
         with open(a.path, 'r') as f:
-            a.short_content = f.read()[:100]
+            sc = f.read()[:300]
+        sc = sub(r'</\S+>', '', sc)
+        sc = sub(r'<.+>', '', sc)
+        a.short_content = sc
 
     sections = Section.objects.all()
     section = Section.objects.filter(id=section_id).first()
@@ -46,36 +53,41 @@ def article_read(request, article_id):
 
 
 def article_list(request):
-    if request.user.is_superuser:
+    if request.user.is_superuser or request.user.is_administrator():
         articles = Article.objects.order_by('created_date')
+    elif request.user.is_moderator():
+        articles = Article.objects.filter(user_id=request.user).order_by('created_date')
+    else:
+        return render(request, 'bad_permission.html')
 
-        data = []
+    data = []
 
-        for article in articles:
-            t = Tag.objects.filter(article_id__id=article.id)
-            tag_string = ''
-            for tag in t:
-                tag_string += tag.name
-                tag_string += ';'
-            
-            d = { "article" : article, "tags" : tag_string }
-            data.append(d)          
+    for article in articles:
+        t = Tag.objects.filter(article_id__id=article.id)
+        tag_string = ''
+        for tag in t:
+            tag_string += tag.name
+            tag_string += ';'
 
-        return render(request, 'management/article_list.html', {'articles': data})
-    return render(request, 'bad_permission.html')
+        d = {"article": article, "tags": tag_string}
+        data.append(d)
+
+    return render(request, 'management/article_list.html', {'articles': data})
 
 
 def comment_list(request):
-    if request.user.is_superuser:
+    if request.user.is_administrator():
         comments = Comment.objects.order_by('article_id')
         return render(request, 'management/comment_list.html', {'comments': comments})
     return render(request, 'bad_permission.html')
 
 
 def comment_new(request, article_id):
-    comment = Comment(article_id=get_object_or_404(Article, pk=article_id), user_id=request.user, text=request.POST.get('commentText'))
-    comment.save()
-    return redirect('cmsapp:article_read', article_id)
+    if request.user.is_authenticated:
+        comment = Comment(article_id=get_object_or_404(Article, pk=article_id), user_id=request.user, text=request.POST.get('commentText'))
+        comment.save()
+        return redirect('cmsapp:article_read', article_id)
+    return render(request, 'bad_permission.html')
 
 
 def comment_edit(request, comment_id):
@@ -84,39 +96,49 @@ def comment_edit(request, comment_id):
 
 
 def comment_edit_save(request, comment_id):
-    comment = get_object_or_404(Comment, pk=comment_id)
-    comment.text = request.POST.get('commentText')
-    comment.save()
-    return redirect('cmsapp:comment_list')
+    if request.user.is_administrator():
+        comment = get_object_or_404(Comment, pk=comment_id)
+        comment.text = request.POST.get('commentText')
+        comment.save()
+        return redirect('cmsapp:comment_list')
+    return render(request, 'bad_permission.html')
 
 
 def comment_delete(request, comment_id):
-    comment = get_object_or_404(Comment, pk=comment_id)
-    comment.delete()
-    return redirect('cmsapp:comment_list')
+    if request.user.is_administrator():
+        comment = get_object_or_404(Comment, pk=comment_id)
+        comment.delete()
+        return redirect('cmsapp:comment_list')
+    return render(request, 'bad_permission.html')
 
 
 def section_list(request):
-    if request.user.is_superuser:
+    if request.user.is_administrator():
         sections = Section.objects.order_by('name')
         return render(request, 'management/section_list.html', {'sections': sections})
     return render(request, 'bad_permission.html')
 
 
 def section_new(request):
-    return render(request, 'management/section_new.html')
+    if request.user.is_administrator():
+        return render(request, 'management/section_new.html')
+    return render(request, 'bad_permission.html')
 
 
 def section_save(request):
-    section = Section(name=request.POST.get('name'))
-    section.save()
-    return redirect('cmsapp:section_list')
+    if request.user.is_administrator():
+        section = Section(name=request.POST.get('name'))
+        section.save()
+        return redirect('cmsapp:section_list')
+    return render(request, 'bad_permission.html')
 
 
 def section_delete(request, section_id):
-    s = get_object_or_404(Section, pk=section_id)
-    s.delete()
-    return redirect('cmsapp:section_list')
+    if request.user.is_administrator():
+        s = get_object_or_404(Section, pk=section_id)
+        s.delete()
+        return redirect('cmsapp:section_list')
+    return render(request, 'bad_permission.html')
 
 
 def section_edit(request, section_id):
@@ -125,14 +147,16 @@ def section_edit(request, section_id):
 
 
 def section_edit_save(request, section_id):
-    section = get_object_or_404(Section, pk=section_id)
-    section.name = request.POST.get('name')
-    section.save()
-    return redirect('cmsapp:section_list')
+    if request.user.is_administrator():
+        section = get_object_or_404(Section, pk=section_id)
+        section.name = request.POST.get('name')
+        section.save()
+        return redirect('cmsapp:section_list')
+    return render(request, 'bad_permission.html')
 
 
 def user_list(request):
-    if request.user.is_superuser:
+    if request.user.is_administrator():
         temp_users = User.objects.order_by('id')
         users = []
         for u in temp_users:
@@ -145,59 +169,71 @@ def user_list(request):
 
 
 def user_edit(request, user_id):
-    u = get_object_or_404(User, pk=user_id)
-    user = {'id': u.id, 'username': u.username, 'group': u.groups.first() if u.groups.count() > 0 else ''}
-    groups = Group.objects.all()
-    return render(request, 'management/user_edit.html', {'edit_user': user, 'groups': groups})
+    if request.user.is_administrator():
+        u = get_object_or_404(User, pk=user_id)
+        user = {'id': u.id, 'username': u.username, 'group': u.groups.first() if u.groups.count() > 0 else ''}
+        groups = Group.objects.all()
+        return render(request, 'management/user_edit.html', {'edit_user': user, 'groups': groups})
+    return render(request, 'bad_permission.html')
 
 
 def user_save(request, user_id):
-    user = get_object_or_404(User, pk=user_id)
-    user.groups.clear()
-    gr = request.POST.get('selected_group')
-    user.groups.set([gr])
-    return redirect('cmsapp:user_list')
+    if request.user.is_administrator():
+        user = get_object_or_404(User, pk=user_id)
+        user.groups.clear()
+        gr = request.POST.get('selected_group')
+        user.groups.set([gr])
+        return redirect('cmsapp:user_list')
+    return render(request, 'bad_permission.html')
 
 
 def user_delete(request, user_id):
-    u = get_object_or_404(User, pk=user_id)
-    u.delete()
-    return redirect('cmsapp:user_list')
+    if request.user.is_administrator():
+        u = get_object_or_404(User, pk=user_id)
+        u.delete()
+        return redirect('cmsapp:user_list')
+    return render(request, 'bad_permission.html')
 
 
 def article_new(request):
-    date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-    sections = Section.objects.all()
-    return render(request, 'management/article_new.html', {'date': date, 'sections': sections})
+    if request.user.is_administrator() or request.user.is_moderator():
+        date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+        sections = Section.objects.all()
+        return render(request, 'management/article_new.html', {'date': date, 'sections': sections})
+    else:
+        return render(request, 'bad_permission.html')
 
 
 def article_save(request):
-    path = settings.MEDIA_ROOT + 'articles/' + request.POST.get("title") + '_' + datetime.datetime.now().strftime('%Y-%m-%d') + '.txt'
+    if request.user.is_administrator() or request.user.is_moderator():
+        path = settings.MEDIA_ROOT + 'articles/' + request.POST.get("title") + '_' + datetime.datetime.now().strftime('%Y-%m-%d') + '.txt'
 
-    pathlib.Path(settings.MEDIA_ROOT + 'articles').mkdir(parents=True, exist_ok=True)
-    with open(path, 'a+') as f:
-        f.write(request.POST.get("content").replace('\n', ''))
+        pathlib.Path(settings.MEDIA_ROOT + 'articles').mkdir(parents=True, exist_ok=True)
+        with open(path, 'a+') as f:
+            f.write(request.POST.get("content").replace('\n', ''))
 
-    section = Section.objects.filter(name=request.POST.get('section')).first()
+        section = Section.objects.filter(name=request.POST.get('section')).first()
 
-    article = Article(name=request.POST.get("title"), user_id=request.user, published_date=request.POST.get("publishDate"), path=path, section_id=section)
-    article.save()
+        article = Article(name=request.POST.get("title"), user_id=request.user, published_date=request.POST.get("publishDate"), path=path, section_id=section)
+        article.save()
 
-    for tag_name in request.POST.get("tags").split(';'):
-        if tag_name != '':
-            t = Tag.objects.filter(name=tag_name)
-            if not t:
-                tag = Tag(name=tag_name)
-                tag.save()
-                tag.article_id.add(article)
-            else:
-                t[0].article_id.add(article)
+        for tag_name in request.POST.get("tags").split(';'):
+            if tag_name != '':
+                t = Tag.objects.filter(name=tag_name)
+                if not t:
+                    tag = Tag(name=tag_name)
+                    tag.save()
+                    tag.article_id.add(article)
+                else:
+                    t[0].article_id.add(article)
 
-    return redirect('cmsapp:article_list')
+        return redirect('cmsapp:article_list')
+    return render(request, 'bad_permission.html')
 
 
 def article_edit(request, article_id):
-    if request.user.is_superuser:
+    article = Article.objects.filter(pk=article_id).first()
+    if request.user.is_administrator() or request.user == article.user_id:
         article = Article.objects.filter(pk=article_id).first()
 
         with open(article.path, 'r') as f:
@@ -217,49 +253,53 @@ def article_edit(request, article_id):
 
 def article_edit_save(request, article_id):
     article = Article.objects.filter(pk=article_id).first()
-    article.name = request.POST.get("title")
-    article.published_date = request.POST.get("publishDate")
+    if request.user.is_administrator() or request.user == article.user_id:
+        article.name = request.POST.get("title")
+        article.published_date = request.POST.get("publishDate")
 
-    section = Section.objects.filter(name=request.POST.get('section')).first()
-    article.section_id = section
+        section = Section.objects.filter(name=request.POST.get('section')).first()
+        article.section_id = section
 
-    # article.path = request.POST.get("path")
-    # article.content = request.POST.get("content")
+        # article.path = request.POST.get("path")
+        # article.content = request.POST.get("content")
 
-    path = article.path
-    with open(path, 'w') as f:
-        f.write(request.POST.get("content").replace('\n', ''))
+        path = article.path
+        with open(path, 'w') as f:
+            f.write(request.POST.get("content").replace('\n', ''))
 
-    article.save()
+        article.save()
 
-    for tag_name in request.POST.get("tags").split(';'):
-        if tag_name != '':
-            t = Tag.objects.filter(name=tag_name, article_id__id=article.id)
-            if not t:
-                t = Tag.objects.filter(name=tag_name)
+        for tag_name in request.POST.get("tags").split(';'):
+            if tag_name != '':
+                t = Tag.objects.filter(name=tag_name, article_id__id=article.id)
                 if not t:
-                    tag = Tag(name=tag_name)
-                    tag.save()
-                    tag.article_id.add(article)
-                else:
-                    t[0].article_id.add(article)
-        
-    t = Tag.objects.filter(article_id__id=article.id)
-    for tag in t:
-        if tag.name not in request.POST.get("tags").split(';'):
-            a = tag.article_id.all()
-            if len(a) == 1:
-                tag.delete()
-            else:
-                tag.article_id.remove(article)
+                    t = Tag.objects.filter(name=tag_name)
+                    if not t:
+                        tag = Tag(name=tag_name)
+                        tag.save()
+                        tag.article_id.add(article)
+                    else:
+                        t[0].article_id.add(article)
 
-    return redirect('cmsapp:article_list')
+        t = Tag.objects.filter(article_id__id=article.id)
+        for tag in t:
+            if tag.name not in request.POST.get("tags").split(';'):
+                a = tag.article_id.all()
+                if len(a) == 1:
+                    tag.delete()
+                else:
+                    tag.article_id.remove(article)
+
+        return redirect('cmsapp:article_list')
+    return render(request, 'bad_permission.html')
 
 
 def article_delete(request, article_id):
     a = get_object_or_404(Article, pk=article_id)
-    a.delete()
-    return redirect('cmsapp:article_list')
+    if request.user.is_administrator() or request.user == a.user_id:
+        a.delete()
+        return redirect('cmsapp:article_list')
+    return render(request, 'bad_permission.html')
 
 
 def custom_login(request):

@@ -9,8 +9,8 @@
         <thead>
             <tr>
                 <th>Title</th>
-{#                <th>Path</th>#}
                 <th>Tags</th>
+                <th>Author</th>
                 <th>Edited</th>
                 <th></th>
                 <th></th>
@@ -21,10 +21,9 @@
                 {% for entry in articles %}
                     <tr>
                         <td>{{ entry.article.name }}</td>
-{#                        <td>{{ entry.article.path }}</td>#}
                         <td>{{ entry.tags }}</td>
+                        <td>{{ entry.article.user_id.username }}</td>
                         <td>{{ entry.article.edited_date }}</td>
-{#                        <td><a href="/manage/articles/edit/{{ entry.article.name }}" class="btn btn-primary btn-sm">Edit</a></td>#}
                         <td><a class="btn btn-primary btn-sm" href="{% url 'cmsapp:article_edit' entry.article.id %}" >Edit</a></td>
                         <td><a class="btn btn-danger btn-sm" href="{% url 'cmsapp:article_delete' entry.article.id %}">Delete</a></td>
                     </tr>

@@ -29,7 +29,7 @@
             <div class="my-4">
                 <div>
                     <span class="font-weight-bold">{{ comment.user_id.username }}</span> - {{ comment.published_date }}
-                    {% if user.is_authenticated and user.is_superuser or user.id == comment.user_id_id %}
+                    {% if user.is_authenticated and user.is_superuser %}
                         <a class="btn btn-primary btn-sm" href="{% url 'cmsapp:comment_edit' comment.id %}">Edit</a>
                         <a class="btn btn-danger btn-sm" href="{% url 'cmsapp:comment_delete' comment.id %}">Delete</a>
                     {% endif %}

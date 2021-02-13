@@ -32,7 +32,14 @@ class Comment(models.Model):
 
 
 class User(AbstractUser):
-    pass
+    def get_group_id(self):
+        return self.groups.all()[0].id
+
+    def is_administrator(self):
+        return self.groups.all()[0].id == 1
+
+    def is_moderator(self):
+        return self.groups.all()[0].id == 2
 
 
 # class Role(models.Model): # can be replaced by the 'Group' - standard Django class associated with User
