@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-    <h1>New Article</h1>
+    <h1 class="mb-4">New Article</h1>
     <form action="{% url 'cmsapp:article_save' %}" method="post">{% csrf_token %}
         <div class="form-group">
             <label for="inputTitle">Title</label>
@@ -9,7 +9,7 @@
         </div>
         <div class="form-group">
             <label for="inputTags">Tags</label>
-            <input type="text" class="form-control" id="inputTags" aria-describedby="tagsHelp" placeholder="Enter tags" name="tags">
+            <input type="text" class="form-control" id="inputTags" aria-describedby="tagsHelp" placeholder="tag1;tag2;tag3" name="tags">
         </div>
         <div class="form-group">
             <label for="inputSection">Section</label>

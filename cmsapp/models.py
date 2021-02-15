@@ -41,6 +41,9 @@ class User(AbstractUser):
     def is_moderator(self):
         return self.groups.all()[0].id == 2
 
+    def is_user(self):
+        return self.groups.all()[0].id == 3
+
 
 # class Role(models.Model): # can be replaced by the 'Group' - standard Django class associated with User
 #     name = models.CharField

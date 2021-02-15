@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group
+from django.core.mail import send_mail
 
 from django.conf import settings
 from .models import Article, Comment, User, Tag, Section
@@ -76,7 +77,7 @@ def article_list(request):
 
 
 def comment_list(request):
-    if request.user.is_administrator():
+    if request.user.is_superuser or request.user.is_administrator():
         comments = Comment.objects.order_by('article_id')
         return render(request, 'management/comment_list.html', {'comments': comments})
     return render(request, 'bad_permission.html')
@@ -96,7 +97,7 @@ def comment_edit(request, comment_id):
 
 
 def comment_edit_save(request, comment_id):
-    if request.user.is_administrator():
+    if request.user.is_superuser or request.user.is_administrator():
         comment = get_object_or_404(Comment, pk=comment_id)
         comment.text = request.POST.get('commentText')
         comment.save()
@@ -105,7 +106,7 @@ def comment_edit_save(request, comment_id):
 
 
 def comment_delete(request, comment_id):
-    if request.user.is_administrator():
+    if request.user.is_superuser or request.user.is_administrator():
         comment = get_object_or_404(Comment, pk=comment_id)
         comment.delete()
         return redirect('cmsapp:comment_list')
@@ -113,20 +114,20 @@ def comment_delete(request, comment_id):
 
 
 def section_list(request):
-    if request.user.is_administrator():
+    if request.user.is_superuser or request.user.is_administrator():
         sections = Section.objects.order_by('name')
         return render(request, 'management/section_list.html', {'sections': sections})
     return render(request, 'bad_permission.html')
 
 
 def section_new(request):
-    if request.user.is_administrator():
+    if request.user.is_superuser or request.user.is_administrator():
         return render(request, 'management/section_new.html')
     return render(request, 'bad_permission.html')
 
 
 def section_save(request):
-    if request.user.is_administrator():
+    if request.user.is_superuser or request.user.is_administrator():
         section = Section(name=request.POST.get('name'))
         section.save()
         return redirect('cmsapp:section_list')
@@ -134,7 +135,7 @@ def section_save(request):
 
 
 def section_delete(request, section_id):
-    if request.user.is_administrator():
+    if request.user.is_superuser or request.user.is_administrator():
         s = get_object_or_404(Section, pk=section_id)
         s.delete()
         return redirect('cmsapp:section_list')
@@ -147,7 +148,7 @@ def section_edit(request, section_id):
 
 
 def section_edit_save(request, section_id):
-    if request.user.is_administrator():
+    if request.user.is_superuser or request.user.is_administrator():
         section = get_object_or_404(Section, pk=section_id)
         section.name = request.POST.get('name')
         section.save()
@@ -156,7 +157,7 @@ def section_edit_save(request, section_id):
 
 
 def user_list(request):
-    if request.user.is_administrator():
+    if request.user.is_superuser or request.user.is_administrator():
         temp_users = User.objects.order_by('id')
         users = []
         for u in temp_users:
@@ -169,7 +170,7 @@ def user_list(request):
 
 
 def user_edit(request, user_id):
-    if request.user.is_administrator():
+    if request.user.is_superuser or request.user.is_administrator():
         u = get_object_or_404(User, pk=user_id)
         user = {'id': u.id, 'username': u.username, 'group': u.groups.first() if u.groups.count() > 0 else ''}
         groups = Group.objects.all()
@@ -178,7 +179,7 @@ def user_edit(request, user_id):
 
 
 def user_save(request, user_id):
-    if request.user.is_administrator():
+    if request.user.is_superuser or request.user.is_administrator():
         user = get_object_or_404(User, pk=user_id)
         user.groups.clear()
         gr = request.POST.get('selected_group')
@@ -188,7 +189,7 @@ def user_save(request, user_id):
 
 
 def user_delete(request, user_id):
-    if request.user.is_administrator():
+    if request.user.is_superuser or request.user.is_administrator():
         u = get_object_or_404(User, pk=user_id)
         u.delete()
         return redirect('cmsapp:user_list')
@@ -196,7 +197,7 @@ def user_delete(request, user_id):
 
 
 def article_new(request):
-    if request.user.is_administrator() or request.user.is_moderator():
+    if request.user.is_superuser or request.user.is_administrator() or request.user.is_moderator():
         date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         sections = Section.objects.all()
         return render(request, 'management/article_new.html', {'date': date, 'sections': sections})
@@ -205,7 +206,7 @@ def article_new(request):
 
 
 def article_save(request):
-    if request.user.is_administrator() or request.user.is_moderator():
+    if request.user.is_superuser or request.user.is_administrator() or request.user.is_moderator():
         path = settings.MEDIA_ROOT + 'articles/' + request.POST.get("title") + '_' + datetime.datetime.now().strftime('%Y-%m-%d') + '.txt'
 
         pathlib.Path(settings.MEDIA_ROOT + 'articles').mkdir(parents=True, exist_ok=True)
@@ -233,7 +234,7 @@ def article_save(request):
 
 def article_edit(request, article_id):
     article = Article.objects.filter(pk=article_id).first()
-    if request.user.is_administrator() or request.user == article.user_id:
+    if request.user.is_superuser or request.user.is_administrator() or request.user == article.user_id:
         article = Article.objects.filter(pk=article_id).first()
 
         with open(article.path, 'r') as f:
@@ -253,7 +254,7 @@ def article_edit(request, article_id):
 
 def article_edit_save(request, article_id):
     article = Article.objects.filter(pk=article_id).first()
-    if request.user.is_administrator() or request.user == article.user_id:
+    if request.user.is_superuser or request.user.is_administrator() or request.user == article.user_id:
         article.name = request.POST.get("title")
         article.published_date = request.POST.get("publishDate")
 
@@ -296,9 +297,60 @@ def article_edit_save(request, article_id):
 
 def article_delete(request, article_id):
     a = get_object_or_404(Article, pk=article_id)
-    if request.user.is_administrator() or request.user == a.user_id:
+    if request.user.is_superuser or request.user.is_administrator() or request.user == a.user_id:
         a.delete()
         return redirect('cmsapp:article_list')
+    return render(request, 'bad_permission.html')
+
+
+def profile_edit(request):
+    if request.user.is_authenticated:
+        return render(request, 'management/profile_edit.html')
+    return render(request, 'bad_permission.html')
+
+
+def profile_edit_save(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    if request.user == user:
+        user.first_name = request.POST.get('first_name')
+        user.last_name = request.POST.get('last_name')
+        user.save()
+        return redirect('cmsapp:profile_edit')
+    return render(request, 'bad_permission.html')
+
+
+def profile_password_change(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    if request.user == user:
+        if user.check_password(request.POST.get('password-old')):
+            if request.POST.get('password1') == request.POST.get('password2'):
+                user.password = request.POST.get('password1')
+                user.save()
+                user.check_password()
+                return redirect('cmsapp:profile_edit')
+            else:
+                return render(request, 'management/profile_edit.html', {'error': 'Your passwords were different'})
+        else:
+            return render(request, 'management/profile_edit.html', {'error': 'Your old password did not match'})
+    return render(request, 'bad_permission.html')
+
+
+def send_email(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    if request.user.is_authenticated and request.user == user:
+        subject = 'Message from CMS user: ' + user.username
+        message = request.POST.get('message')
+
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email='',
+            recipient_list=[''],
+            auth_user='',
+            auth_password='',
+            fail_silently=False
+        )
+
     return render(request, 'bad_permission.html')
 
 

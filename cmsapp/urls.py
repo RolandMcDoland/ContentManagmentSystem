@@ -33,4 +33,8 @@ urlpatterns = [
     path('account/logout', views.custom_logout, name='logout'),
     path('account/authentication', views.custom_authentication, name='authentication'),
     path('account/createaccount', views.custom_create_account, name='create_account'),
+    path('account/profile/edit', views.profile_edit, name='profile_edit'),
+    path('account/profile/edit/save/<int:user_id>', views.profile_edit_save, name='profile_edit_save'),
+    path('account/profile/password/change/<int:user_id>', views.profile_password_change, name='profile_password_change'),
+    path('system/send-email/<int:user_id>', views.send_email, name='send_email')
 ]

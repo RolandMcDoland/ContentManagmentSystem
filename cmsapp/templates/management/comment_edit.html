@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-    <h2>Edit comment made by <span class="font-weight-bold">{{ comment.user_id.username }}</span> in {{ comment.published_date }}</h2>
+    <h2 class="mb-4">Edit comment made by <span class="font-weight-bold">{{ comment.user_id.username }}</span> in {{ comment.published_date }}</h2>
 
     <form method="post" class="my-4" action="{% url 'cmsapp:comment_edit_save' comment.id %}">
         {% csrf_token %}

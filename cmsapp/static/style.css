@@ -5,3 +5,8 @@ body {
 .cms-background {
     background-color: #ffffff;
 }
+
+.cms-navigation {
+    background-color: #4C81C9;
+    font-size: larger;
+}

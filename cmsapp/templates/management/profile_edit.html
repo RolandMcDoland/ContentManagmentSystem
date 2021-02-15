@@ -1,0 +1,56 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h2>Your profile</h2>
+    <form method="post" class="my-4" action="{% url 'cmsapp:profile_edit_save' user.id %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" disabled>
+        </div>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" disabled>
+        </div>
+        <div class="form-group">
+            <label for="first_name">First name</label>
+            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
+        </div>
+        <div class="form-group">
+            <label for="last_name">Last name</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
+        </div>
+        <input class="btn btn-primary" type="submit" value="Edit profile" />
+    </form>
+
+    <h2 class="mt-5">Change password</h2>
+    <form method="post" class="my-4" action="{% url 'cmsapp:profile_password_change' user.id %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="password-old">Old password</label>
+            <input type="password" class="form-control" id="password-old" name="password-old" placeholder="Old password">
+        </div>
+        <div class="form-group">
+            <label for="password1">Password</label>
+            <input type="password" class="form-control" id="password1" name="password1" placeholder="Password">
+        </div>
+        <div class="form-group">
+            <label for="password2">Repeat password</label>
+            <input type="password" class="form-control" id="password2" name="password2" placeholder="Repeat password">
+        </div>
+        <input class="btn btn-primary" type="submit" value="Change password" />
+    </form>
+    {% if error %}
+        <p class="text-danger">{{ error }}</p>
+    {% endif %}
+
+    <h3 class="mt-5">Write to us!</h3>
+    <form method="post" class="mb-4" action="{% url 'cmsapp:send_email' user.id %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="message">Want to share a thought? Write to us!</label>
+            <textarea class="form-control" id="message" name="message" placeholder="Write a message..."></textarea>
+        </div>
+        <input class="btn btn-primary" type="submit" value="Send message" />
+    </form>
+{% endblock %}

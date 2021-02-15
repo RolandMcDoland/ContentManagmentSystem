@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<nav class="navbar navbar-expand justify-content-between navbar-light bg-light">
+<nav class="navbar-collapse navbar-light bg-light">
     <a class="navbar-brand" href="{% url 'cmsapp:index' %}">All</a>
     {% if sections %}
         {% for section in sections %}
@@ -10,16 +10,18 @@
     {% endif %} 
 </nav>
     {% if section %}
-        <h1 style="margin-top: 2%;">{{ section.name }} Articles</h1>
+        <h1 class="my-4">{{ section.name }} Articles</h1>
     {% else %}
-        <h1 style="margin-top: 2%;">Articles</h1>
+        <h1 class="my-4">Articles</h1>
     {% endif %}
     <div class="my-5"></div>
     {% for article in articles %}
         <div class="my-4">
-            <h3>{{ article.name }}</h3>
+            <h4 class="font-weight-bold">{{ article.name }}</h4>
+            <h6 class="text-black-50 font-italic">Published: {{ article.published_date }}</h6>
             <p>{{ article.short_content | safe }}...</p>
             <a href="{% url 'cmsapp:article_read' article.id %}">Read more...</a>
         </div>
+        <hr/>
     {% endfor %}
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-    <h1>Edit Article</h1>
+    <h1 class="mb-4">Edit Article</h1>
     <form action="{% url 'cmsapp:article_edit_save' article.id %}" method="post">{% csrf_token %}
         <div class="form-group">
             <label for="inputTitle">Title</label>

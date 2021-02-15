@@ -2,12 +2,17 @@
 
 {% block content %}
     {% if tags %}
-        <h6>{{ tags }}</h6>
+        <h6>Tags: {{ tags }}</h6>
     {% endif %}
-    <h1>{{ article.name }}</h1>
-    <h5>Author: {{ article.user_id.username }}</h5>
+    <div class="my-4">
+        <h1 class="font-weight-bold">{{ article.name }}</h1>
+        <h6 class="text-black-50">Author: {{ article.user_id.username }} <br>
+        Published: {{ article.published_date }}</h6>
+    </div>
 
-    <p>{{ article.content | safe}}</p>
+    <div class="mb-5">{{ article.content | safe}}</div>
+
+    <hr>
 
     <div class="my-4"></div>
     {% if user.is_authenticated %}
@@ -23,14 +28,14 @@
         <h4>You need to be logged in to comment.</h4>
     {% endif %}
 
-    <h4 class="mt-4">Comments</h4>
+    <h4 class="mt-5">Comments</h4>
     {% if comments %}
         {% for comment in comments %}
-            <div class="my-4">
+            <div class="my-3">
                 <div>
                     <span class="font-weight-bold">{{ comment.user_id.username }}</span> - {{ comment.published_date }}
-                    {% if user.is_authenticated and user.is_superuser %}
-                        <a class="btn btn-primary btn-sm" href="{% url 'cmsapp:comment_edit' comment.id %}">Edit</a>
+                    {% if user.is_superuser or user.is_administrator or user == comment.user_id %}
+                        <a class="btn btn-primary btn-sm ml-3" href="{% url 'cmsapp:comment_edit' comment.id %}">Edit</a>
                         <a class="btn btn-danger btn-sm" href="{% url 'cmsapp:comment_delete' comment.id %}">Delete</a>
                     {% endif %}
                 </div>
