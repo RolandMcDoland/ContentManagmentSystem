@@ -20,19 +20,26 @@
 {#        {% elif user.is_authenticated and user.is_moderator %}#}
 {#            <a class="navbar-brand" href="{% url 'cmsapp:article_list' %}">Articles</a>#}
 {#        {% endif %}#}
-        {% if user.is_authenticated %}
-            <div class="nav-item dropdown">
-                <a class="navbar-brand dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">Hello, {{ user.username }}</a>
-                <div class="dropdown-menu">
-                  <a class="dropdown-item" href="{% url 'cmsapp:profile_edit' %}">Profile</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="{% url 'cmsapp:logout' %}">Logout</a>
+            <div class="flex-fill"></div>
+            <form class="float-left mr-5" method="post" action="{% url 'cmsapp:search_article' %}">
+                {% csrf_token %}
+                <input type="text" class="form-control" name="search_text" placeholder="Search..." maxlength="50"/>
+                <input class="d-none" type="submit" value="Send message" />
+            </form>
+            {% if user.is_authenticated %}
+                <div class="nav-item dropdown">
+                    <a class="navbar-brand dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">Hello, {{ user.username }}</a>
+                    <div class="dropdown-menu">
+                      <a class="dropdown-item" href="{% url 'cmsapp:profile_edit' %}">Profile</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="{% url 'cmsapp:logout' %}">Logout</a>
+                    </div>
                 </div>
-            </div>
-{#            <a class="navbar-brand" href="{% url 'cmsapp:logout' %}">Logout</a>#}
-        {% else %}
-            <a class="navbar-brand" href="{% url 'cmsapp:login' %}">Login</a>
-        {% endif %}
+    {#            <a class="navbar-brand" href="{% url 'cmsapp:logout' %}">Logout</a>#}
+            {% else %}
+                <a class="navbar-brand" href="{% url 'cmsapp:login' %}">Login</a>
+            {% endif %}
+
     </nav>
     <div class="container-fluid">
         <div class="row {% if user.is_user or not user.is_authenticated %} justify-content-center {% endif %}">

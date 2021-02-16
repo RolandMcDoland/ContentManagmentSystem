@@ -39,6 +39,39 @@ def article_section(request, section_id):
     return render(request, 'index.html', {'articles': articles, 'sections': sections, 'section': section})
 
 
+def articles_search(request):
+    all_articles = Article.objects.all().order_by('edited_date').reverse()
+    search_text = request.POST.get('search_text').lower()
+    articles = []
+    for art in all_articles:
+        if search_text in art.name.lower():
+            articles.append(art)
+            continue
+
+        with open(art.path, 'r') as f:
+            if search_text in f.read().lower():
+                articles.append(art)
+                continue
+
+        t = Tag.objects.filter(article_id__id=art.id)
+        tag_string = ''
+        for tag in t:
+            tag_string += tag.name
+            tag_string += ' '
+        if search_text in tag_string:
+            articles.append(art)
+            continue
+
+    for a in articles:
+        with open(a.path, 'r') as f:
+            sc = f.read()[:300]
+        sc = sub(r'</\S+>', '', sc)
+        sc = sub(r'<.+>', '', sc)
+        a.short_content = sc
+
+    return render(request, 'articles_search.html', {'articles': articles, 'search_text': search_text})
+
+
 def article_read(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
     with open(article.path, 'r') as f:
