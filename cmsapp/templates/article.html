@@ -7,7 +7,7 @@
     <div class="my-4">
         <h1 class="font-weight-bold">{{ article.name }}</h1>
         <h6 class="text-black-50">Author: {{ article.user_id.username }} <br>
-        Published: {{ article.published_date }}</h6>
+        Last edited: {{ article.edited_date }}</h6>
     </div>
 
     <div class="mb-5">{{ article.content | safe}}</div>

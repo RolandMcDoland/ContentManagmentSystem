@@ -13,7 +13,7 @@ from .models import Article, Comment, User, Tag, Section
 
 
 def index(request):
-    articles = Article.objects.filter(published_date__lte=datetime.datetime.now()).order_by('edited_date')
+    articles = Article.objects.filter(published_date__lte=datetime.datetime.now()).order_by('edited_date').reverse()
     for a in articles:
         with open(a.path, 'r') as f:
             sc = f.read()[:300]
@@ -26,7 +26,7 @@ def index(request):
 
 
 def article_section(request, section_id):
-    articles = Article.objects.filter(published_date__lte=datetime.datetime.now(), section_id__id=section_id).order_by('edited_date')
+    articles = Article.objects.filter(published_date__lte=datetime.datetime.now(), section_id__id=section_id).order_by('edited_date').reverse()
     for a in articles:
         with open(a.path, 'r') as f:
             sc = f.read()[:300]
@@ -55,9 +55,9 @@ def article_read(request, article_id):
 
 def article_list(request):
     if request.user.is_superuser or request.user.is_administrator():
-        articles = Article.objects.order_by('created_date')
+        articles = Article.objects.order_by('created_date').reverse()
     elif request.user.is_moderator():
-        articles = Article.objects.filter(user_id=request.user).order_by('created_date')
+        articles = Article.objects.filter(user_id=request.user).order_by('created_date').reverse()
     else:
         return render(request, 'bad_permission.html')
 
@@ -214,8 +214,9 @@ def article_save(request):
             f.write(request.POST.get("content").replace('\n', ''))
 
         section = Section.objects.filter(name=request.POST.get('section')).first()
+        published_date = datetime.datetime.strptime(request.POST.get("publishDate"), '%d.%m.%Y %H:%M')
 
-        article = Article(name=request.POST.get("title"), user_id=request.user, published_date=request.POST.get("publishDate"), path=path, section_id=section)
+        article = Article(name=request.POST.get("title"), user_id=request.user, published_date=published_date, path=path, section_id=section)
         article.save()
 
         for tag_name in request.POST.get("tags").split(';'):
@@ -256,7 +257,7 @@ def article_edit_save(request, article_id):
     article = Article.objects.filter(pk=article_id).first()
     if request.user.is_superuser or request.user.is_administrator() or request.user == article.user_id:
         article.name = request.POST.get("title")
-        article.published_date = request.POST.get("publishDate")
+        article.published_date = datetime.datetime.strptime(request.POST.get("publishDate"), '%d.%m.%Y %H:%M')
 
         section = Section.objects.filter(name=request.POST.get('section')).first()
         article.section_id = section

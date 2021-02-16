@@ -26,15 +26,24 @@
             <textarea rows="10" columns="100" class="form-control" id="inputContent" aria-describedby="contentHelp" placeholder="Enter content" name="content"></textarea>
         </div>
         <div class="form-group">
-            <label for="inputPublishDate">Publish Date</label>
-            <input type="datetime-local" class="form-control" id="inputPublishDate" aria-describedby="publishDateHelp" name="publishDate" value="{{ date }}">
+            <label for="datetimepicker">Publish Date</label>
+            <input id="datetimepicker" type="text" class="form-control" aria-describedby="publishDateHelp" name="publishDate">
         </div>
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
     {% load static %}
     <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
     <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
     <script>
         CKEDITOR.replace('inputContent');
+
+        jQuery("#datetimepicker").datetimepicker({
+            value: $.now(),
+            format:'d.m.Y H:i',
+            dayOfWeekStart: 1,
+        });
     </script>
 {% endblock %}

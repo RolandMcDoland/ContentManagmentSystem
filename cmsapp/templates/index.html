@@ -18,7 +18,7 @@
     {% for article in articles %}
         <div class="my-4">
             <h4 class="font-weight-bold">{{ article.name }}</h4>
-            <h6 class="text-black-50 font-italic">Published: {{ article.published_date }}</h6>
+            <h6 class="text-black-50 font-italic">Last edited: {{ article.edited_date }}</h6>
             <p>{{ article.short_content | safe }}...</p>
             <a href="{% url 'cmsapp:article_read' article.id %}">Read more...</a>
         </div>
