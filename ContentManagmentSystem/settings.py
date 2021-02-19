@@ -26,7 +26,7 @@ SECRET_KEY = 'rpj01gs_m3rf(op9m#gt$dszf(%se8kip+(%jv$afvpb*_xhr@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['szt-cmsapp.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
@@ -136,10 +136,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'
 
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = '25'
-# EMAIL_HOST_USER = ''
-# EMAIL_HOST_PASSWORD = ''
-# EMAIL_USE_TLS = True
-# EMAIL_USE_SSL = False
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'liszkaszymon.96test@gmail.com'
+EMAIL_HOST_PASSWORD = 'zaq1@WSX'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'liszkaszymon.96test@gmail.com'
+SERVER_EMAIL = 'liszkaszymon.96test@gmail.com'

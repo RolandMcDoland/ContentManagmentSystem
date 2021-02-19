@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 
 from django.conf import settings
 from .models import Article, Comment, User, Tag, Section
@@ -375,15 +375,19 @@ def send_email(request, user_id):
         subject = 'Message from CMS user: ' + user.username
         message = request.POST.get('message')
 
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email='',
-            recipient_list=[''],
-            auth_user='',
-            auth_password='',
-            fail_silently=False
-        )
+        # send_mail(
+        #     subject=subject,
+        #     message=message,
+        #     from_email='liszkaszymon.96test@gmail.com',
+        #     recipient_list=['liszkaszymon.96test@gmail.com'],
+        #     auth_user='liszkaszymon.96test@gmail.com',
+        #     auth_password='zaq1@WSX',
+        #     fail_silently=False
+        # )
+        email = EmailMessage(subject, message, to=['liszkaszymon.96test@gmail.com'])
+        success = email.send()
+        if success == 1:
+            return redirect('cmsapp:profile_edit')
 
     return render(request, 'bad_permission.html')
 
